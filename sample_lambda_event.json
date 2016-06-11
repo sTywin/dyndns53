@@ -1,0 +1,15 @@
+{
+  "path": {},
+  "body-json": {},
+  "querystring": {
+    "hostname": "<host.example.com>",
+    "myip": "<MY_HOST_IP>"
+  },
+  "context": {
+    "http-method": "GET",
+    "source-ip": "<MY_SOURCE_IP>",
+  },
+  "header": {
+    "Authorization": "Basic <MY_BASE64_USER:PASS>"
+  }
+}
