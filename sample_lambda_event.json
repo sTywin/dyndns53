@@ -7,7 +7,7 @@
   },
   "context": {
     "http-method": "GET",
-    "source-ip": "<MY_SOURCE_IP>",
+    "source-ip": "<MY_SOURCE_IP>"
   },
   "header": {
     "Authorization": "Basic <MY_BASE64_USER:PASS>"
