@@ -63,11 +63,13 @@ def _parse_ip(ipstring):
 client53 = boto3.client('route53','us-west-2')
 def r53_upsert(host, hostconf, ip):
 
+	record_type = hostconf['record']['type']
+
 	record_set = client53.list_resource_record_sets(
 		HostedZoneId=hostconf['zone_id'],
 		StartRecordName=host,
-		StartRecordType=hostconf['record']['type'],
-		MaxItems='2'
+		StartRecordType=record_type,
+		MaxItems='1'
 	)
 
 	old_ip = None
@@ -75,14 +77,18 @@ def r53_upsert(host, hostconf, ip):
 		msg = "No existing record found for host {} in zone {}"
 		logger.info(msg.format(host, hostconf['zone_id']))
 	else:
-		for record in record_set['ResourceRecordSets']:
-			if record['Name'] == host:
-				if len(record['ResourceRecords']) == 1:
-					for subrecord in record['ResourceRecords']:
-						old_ip = subrecord['Value']
-				else:
-					msg = "Multiple existing records found for host {} in zone {}"
-					raise ValueError(msg.format(host, hostconf['zone_id']))
+		record = record_set['ResourceRecordSets'][0]
+		if record['Name'] == host and record['Type'] == record_type:
+			if len(record['ResourceRecords']) == 1:
+				for subrecord in record['ResourceRecords']:
+					old_ip = subrecord['Value']
+			else:
+				msg = "Multiple existing records found for host {} in zone {}"
+				raise ValueError(msg.format(host, hostconf['zone_id']))
+		else:
+			msg = "No existing record found for host {} in zone {}"
+			logger.info(msg.format(host, hostconf['zone_id']))
+
 
 	if old_ip == ip:
 		logger.debug("Old IP same as new IP: {}".format(ip))
