@@ -152,6 +152,7 @@ Your API should now be deployed and accessible at the invoke URL you recorded ab
 If you have a [Ubiquiti EdgeRouter](https://www.ubnt.com/edgemax/edgerouter-lite/), you can use the built-in dynamic DNS functionality, which uses `ddclient` to perform the actual updates. Use the following commands in `configure` mode, replacing fields between `<` and `>` with appropriate values for your configuration.
 
 ```
+configure
 edit service dns dynamic
 set service dyndns host-name <host.example.com>
 set service dyndns login <username>
@@ -159,6 +160,7 @@ set service dyndns password <password>
 set service dyndns server <endpoint>.execute-api.<region>.amazonaws.com/<stage>
 commit
 top
+save
 ```
 
 The version of `ddclient` shipped with EdgeMax 1.8.0 firmware does not include support for the `googledomains` protocol, which is a subset of the `dyndns2` protocol. The DynDNS53 API more closely resembles the `googledomains` protocol than the full `dyndns2` protocol.
