@@ -161,6 +161,11 @@ commit
 show service dns
 save
 exit (Exiting configure mode)
+```
+
+Manually update your existing `dyndns` entry.
+
+```
 update dns dynamic interface <eth0>
 show dns dynamic status
 ```
