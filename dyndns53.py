@@ -73,7 +73,7 @@ def r53_upsert(host, hostconf, ip):
 	)
 
 	old_ip = None
-	if not record_set:
+	if len(record_set['ResourceRecordSets']) < 1:
 		msg = "No existing record found for host {} in zone {}"
 		logger.info(msg.format(host, hostconf['zone_id']))
 	else:
