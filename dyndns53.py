@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
-from __future__ import print_function
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -174,8 +174,6 @@ def lambda_handler(event, context):
 		try:
 			j = {'status':e.status, 'response':e.response, 'additional':e.message}
 		except AttributeError as f:
-			j = {'status':500, 'response':"911", 'additional':str(e)}
-		finally:
-			raise type(e), type(e)(json.dumps(j)), sys.exc_info()[2]
+			raise type(e)(json.dumps(j)) from e
 
 	return { 'status': 200, 'response': response }

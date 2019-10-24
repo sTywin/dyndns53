@@ -56,7 +56,7 @@ The Lambda function parses the client update request and performs the update in 
    You can have multiple `<username>:<password>` combinations, and multiple `<host.example.com>` entries per user. The `dyndns2` protocol uses HTTP basic authentication, so I recommend using randomly generated username/password strings. Note that API Gateway will only respond to HTTPS, so this information is never sent over the internet in the clear.
 1. Sign into AWS and navigate to the Lambda Console.
 1. Click "Create Lambda Function", and "Skip" selecting a blueprint.
-1. Give your function a name (I used `dyndns53_lambda`) and set the runtime to Python 2.7.
+1. Give your function a name (I used `dyndns53_lambda`) and set the runtime to Python 3.7.
 1. Paste the contents of `dyndns53.py` into the "Lambda function code" box, making sure you have updated your `conf` appropriately.
 1. Select the execution role you created above in the "Role" drop-down list; leave "Handler" as `lambda_function.lambda_handler`.
 1. Under "Advanced settings", you may wish to increase the timeout from 3 s to 10 s. Calls from Lambda to other AWS services can sometimes be slow.
