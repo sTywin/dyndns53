@@ -169,8 +169,11 @@ def lambda_handler(event, context):
         response = _handler(event, context)
     except Exception as e:
         try:
-            j = {'status':e.status, 'response':e.response, 'additional':e.message}
-        except AttributeError as f:
-            raise type(e)(json.dumps(j)) from e
+            error_info = {'status':e.status, 'response':e.response, 'additional':e.message}
+        except AttributeError:
+            # Fallback to more simple error description
+            error_info = {'status':500, 'response':"911", 'additional':str(e)}
+        finally:
+            raise type(e)(json.dumps(error_info)) from e
 
     return { 'status': 200, 'response': response }
