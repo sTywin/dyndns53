@@ -10,6 +10,7 @@ logger.setLevel(logging.DEBUG)
 import json
 import re
 import sys
+from base64 import b64decode
 
 import boto3
 
@@ -132,10 +133,10 @@ def _handler(event, context):
 
     try:
         auth_user, auth_pass = (
-            auth_header[len('Basic '):].decode('base64').split(':') )
+            b64decode(auth_header[len('Basic '):]).decode('utf-8').split(':') )
     except Exception as e:
         msg = "Malformed basicauth string: {}"
-        raise BadAgentException(msg.format(event['header']['Authorization']))
+        raise BadAgentException(msg.format(auth_header))
 
     auth_string = ':'.join([auth_user,auth_pass])
     if auth_string not in conf:
