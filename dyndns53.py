@@ -170,7 +170,7 @@ def lambda_handler(event, context):
         response = _handler(event, context)
     except Exception as e:
         try:
-            error_info = {'status':e.status, 'response':e.response, 'additional':e.message}
+            error_info = {'status':e.status, 'response':e.response, 'additional':str(e)}
         except AttributeError:
             # Fallback to more simple error description
             error_info = {'status':500, 'response':"911", 'additional':str(e)}
