@@ -9,7 +9,6 @@ logger.setLevel(logging.DEBUG)
 
 import json
 import re
-import sys
 from base64 import b64decode
 
 import boto3
