@@ -54,7 +54,7 @@ conf = {
                'ttl': 60,  # TTL in seconds; should be low for DDNS
                # 'type': 'A',  # Type is now inferred from IP type
             },
-            'last_update': None, # not currently used
+            'last_update': None,  # not currently used
          }
       }
    }
