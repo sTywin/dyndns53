@@ -42,7 +42,7 @@ The Lambda function parses the client update request and performs the update in 
          'hosts': {
             '<host.example.com.>': { # FQDN (don't forget trailing `.`)
                'aws_region': 'us-west-2', # not actually important
-               'zone_id': '<MY_ZONE_ID>', # same zone ID as in `iam_polcy`
+               'zone_id': '<MY_ZONE_ID>', # same zone ID as in `iam_policy`
                'record': {
                   'ttl': 60, # TTL in seconds; should be low for DDNS
                   # 'type': 'A',  # Type is now inferred from IP type
