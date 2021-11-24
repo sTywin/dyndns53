@@ -7,7 +7,7 @@ DynDNS53 is an implementation for AWS of the dyndns2 protocol used by many DDNS 
 - An Amazon Web Services (AWS) account.
 - A domain name you control, with name servers pointing to Route 53.
 - A hosted zone for your domain on Route 53.
-- An `A` record for your host's FQDN in the hosted zone.
+- An `A` and/or an `AAAA` record for your host's FQDN in the hosted zone.
 - Patience with AWS Console
 
 ## AWS configuration
@@ -42,10 +42,10 @@ The Lambda function parses the client update request and performs the update in 
          'hosts': {
             '<host.example.com.>': { # FQDN (don't forget trailing `.`)
                'aws_region': 'us-west-2', # not actually important
-               'zone_id': '<MY_ZONE_ID>', # same zone ID as in `iam_polcy`
+               'zone_id': '<MY_ZONE_ID>', # same zone ID as in `iam_policy`
                'record': {
                   'ttl': 60, # TTL in seconds; should be low for DDNS
-                  'type': 'A', # only `A` records supported right now
+                  # 'type': 'A',  # Type is now inferred from IP type
                },
                'last_update': None, # not currently used
             }
@@ -56,7 +56,7 @@ The Lambda function parses the client update request and performs the update in 
    You can have multiple `<username>:<password>` combinations, and multiple `<host.example.com>` entries per user. The `dyndns2` protocol uses HTTP basic authentication, so I recommend using randomly generated username/password strings. Note that API Gateway will only respond to HTTPS, so this information is never sent over the internet in the clear.
 1. Sign into AWS and navigate to the Lambda Console.
 1. Click "Create Lambda Function", and "Skip" selecting a blueprint.
-1. Give your function a name (I used `dyndns53_lambda`) and set the runtime to Python 2.7.
+1. Give your function a name (I used `dyndns53_lambda`) and set the runtime to Python 3.8.
 1. Paste the contents of `dyndns53.py` into the "Lambda function code" box, making sure you have updated your `conf` appropriately.
 1. Select the execution role you created above in the "Role" drop-down list; leave "Handler" as `lambda_function.lambda_handler`.
 1. Under "Advanced settings", you may wish to increase the timeout from 3 s to 10 s. Calls from Lambda to other AWS services can sometimes be slow.
