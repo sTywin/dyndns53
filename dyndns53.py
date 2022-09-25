@@ -1,12 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
-
-from __future__ import print_function
 
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+import base64
 import json
 import re
 import sys
@@ -54,7 +53,7 @@ conf = {
 re_ip = re.compile(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$")
 def _parse_ip(ipstring):
 	m = re_ip.match(ipstring)
-	if bool(m) and all(map(lambda n: 0 <= int(n) <= 255, m.groups())):
+	if bool(m) and all([0 <= int(n) <= 255 for n in m.groups()]):
 		return ipstring
 	else:
 		raise BadAgentException("Invalid IP string: {}".format(ipstring))
@@ -73,7 +72,7 @@ def r53_upsert(host, hostconf, ip):
 	)
 
 	old_ip = None
-	if not record_set:
+	if not record_set or not record_set['ResourceRecordSets']:
 		msg = "No existing record found for host {} in zone {}"
 		logger.info(msg.format(host, hostconf['zone_id']))
 	else:
@@ -132,7 +131,7 @@ def _handler(event, context):
 
 	try:
 		auth_user, auth_pass = (
-			auth_header[len('Basic '):].decode('base64').split(':') )
+			base64.b64decode(bytes(auth_header[len('Basic '):], encoding='ascii')).decode('ascii').split(':') )
 	except Exception as e:
 		msg = "Malformed basicauth string: {}"
 		raise BadAgentException(msg.format(event['header']['Authorization']))
@@ -176,6 +175,6 @@ def lambda_handler(event, context):
 		except AttributeError as f:
 			j = {'status':500, 'response':"911", 'additional':str(e)}
 		finally:
-			raise type(e), type(e)(json.dumps(j)), sys.exc_info()[2]
+			raise type(e)(type(e)(json.dumps(j))).with_traceback(sys.exc_info()[2])
 
 	return { 'status': 200, 'response': response }
