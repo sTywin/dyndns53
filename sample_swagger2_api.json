@@ -1,0 +1,239 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "2022-09-25T01:47:23Z",
+    "title" : "DynDNS53"
+  },
+  "paths" : {
+    "/nic/update" : {
+      "get" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/plain", "application/json" ],
+        "parameters" : [ {
+          "name" : "hostname",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "myip",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "offline",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "400" : {
+            "description" : "400 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "401" : {
+            "description" : "401 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "500" : {
+            "description" : "500 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "403" : {
+            "description" : "403 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "404" : {
+            "description" : "404 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:<ACCOUNT-NUMBER>:function:dyndns53_lambda/invocations",
+          "responses" : {
+            ".*\"status\"\\s*:\\s*403.*" : {
+              "statusCode" : "403",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            ".*\"status\"\\s*:\\s*500.*" : {
+              "statusCode" : "500",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            "default" : {
+              "statusCode" : "200",
+              "responseTemplates" : {
+                "application/json" : "$input.path('$.response')"
+              }
+            },
+            ".*\"status\"\\s*:\\s*404.*" : {
+              "statusCode" : "404",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            ".*\"status\"\\s*:\\s*401.*" : {
+              "statusCode" : "401",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            ".*\"status\"\\s*:\\s*400.*" : {
+              "statusCode" : "400",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            }
+          },
+          "requestTemplates" : {
+            "application/json" : "#set($allParams = $input.params())\n{\n\"body-json\" : $input.json('$'),\n#foreach($type in $allParams.keySet())\n    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\n        #if($foreach.hasNext),#end\n    #end\n},\n#end\n\"context\" : {\n    \"http-method\" : \"$context.httpMethod\",\n    \"stage\" : \"$context.stage\",\n    \"source-ip\" : \"$context.identity.sourceIp\",\n    \"request-id\" : \"$context.requestId\",\n    \"resource-id\" : \"$context.resourceId\",\n    \"resource-path\" : \"$context.resourcePath\"\n    }\n}\n"
+          },
+          "passthroughBehavior" : "when_no_templates",
+          "contentHandling" : "CONVERT_TO_TEXT",
+          "type" : "aws"
+        }
+      },
+      "post" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/plain", "application/json" ],
+        "parameters" : [ {
+          "name" : "hostname",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "myip",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "offline",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "400" : {
+            "description" : "400 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "401" : {
+            "description" : "401 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "500" : {
+            "description" : "500 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "403" : {
+            "description" : "403 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          },
+          "404" : {
+            "description" : "404 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:<ACCOUNT-NUMBER>:function:dyndns53_lambda/invocations",
+          "responses" : {
+            ".*\"status\"\\s*:\\s*403.*" : {
+              "statusCode" : "403",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            ".*\"status\"\\s*:\\s*500.*" : {
+              "statusCode" : "500",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            "default" : {
+              "statusCode" : "200",
+              "responseTemplates" : {
+                "application/json" : "$input.path('$.response')"
+              }
+            },
+            ".*\"status\"\\s*:\\s*404.*" : {
+              "statusCode" : "404",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            ".*\"status\"\\s*:\\s*401.*" : {
+              "statusCode" : "401",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            },
+            ".*\"status\"\\s*:\\s*400.*" : {
+              "statusCode" : "400",
+              "responseTemplates" : {
+                "application/json" : "$util.parseJson($input.path('$.errorMessage')).response"
+              }
+            }
+          },
+          "requestTemplates" : {
+            "application/json" : "#set($allParams = $input.params())\n{\n\"body-json\" : $input.json('$'),\n#foreach($type in $allParams.keySet())\n    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\n        #if($foreach.hasNext),#end\n    #end\n},\n#end\n\"context\" : {\n    \"http-method\" : \"$context.httpMethod\",\n    \"stage\" : \"$context.stage\",\n    \"source-ip\" : \"$context.identity.sourceIp\",\n    \"request-id\" : \"$context.requestId\",\n    \"resource-id\" : \"$context.resourceId\",\n    \"resource-path\" : \"$context.resourcePath\"\n    }\n}\n"
+          },
+          "passthroughBehavior" : "when_no_templates",
+          "contentHandling" : "CONVERT_TO_TEXT",
+          "type" : "aws"
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Empty" : {
+      "type" : "object",
+      "title" : "Empty Schema"
+    }
+  }
+}
