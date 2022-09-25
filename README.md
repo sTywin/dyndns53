@@ -56,7 +56,7 @@ The Lambda function parses the client update request and performs the update in 
    You can have multiple `<username>:<password>` combinations, and multiple `<host.example.com>` entries per user. The `dyndns2` protocol uses HTTP basic authentication, so I recommend using randomly generated username/password strings. Note that API Gateway will only respond to HTTPS, so this information is never sent over the internet in the clear.
 1. Sign into AWS and navigate to the Lambda Console.
 1. Click "Create Lambda Function", and "Skip" selecting a blueprint.
-1. Give your function a name (I used `dyndns53_lambda`) and set the runtime to Python 2.7.
+1. Give your function a name (I used `dyndns53_lambda`) and set the runtime to Python 3.9.
 1. Paste the contents of `dyndns53.py` into the "Lambda function code" box, making sure you have updated your `conf` appropriately.
 1. Select the execution role you created above in the "Role" drop-down list; leave "Handler" as `lambda_function.lambda_handler`.
 1. Under "Advanced settings", you may wish to increase the timeout from 3 s to 10 s. Calls from Lambda to other AWS services can sometimes be slow.
@@ -78,61 +78,14 @@ If it works, you should see the following result:
 
 The JSON event structure above is the way API Gateway interfaces with AWS Lambda. Now you will configure API Gateway to deliver HTTP requests to the Lambda function as events in this format. Likewise, JSON responses like the above will be converted by API Gateway into HTTP responses to the client. This interface is where the bulk of the frustration lies when working with Lambda and API Gateway.
 
-This also happens to be the most tedious part of setting up DynDNS53.
-
 #### Configure the API
 
 1. Sign into AWS and navigate to the API Gateway console.
-1. Click "Create API" and select "New API".
-1. Give your API a name (I used `DynDNS53`) and click "Create API".
-1. Create a `dyndns2`-compatible resource:
-   1. Select `/` in the resource list.
-   1. Drop down "Actions" and select "Create Resource".
-   1. Enter `nic` for the resource name, which should auto-populate the path.
-   1. Click "Create Resource".
-   1. Select `/nic` in the resource list and repeat the above steps, using `update` for the resource name.
-   1. You should now have a `/nic/update` resource.
-1. Create a `GET` method for the `/nic/update` resource:
-   1. Select `/nic/update` in the resource list.
-   1. Drop down "Actions" and select "Create Method".
-   1. Select "GET" from the drop-down that appears, then click the grey checkmark beside it.
-   1. Select "Lambda Function" for the integration type, select the region in which you created the Lambda function, and enter the name you gave your Lambda function above (recall I used `dyndns53_lambda`).
-   1. Click "OK" when asked to give API Gateway permission to access your Lambda function.
-1. Configure the "GET" method request (note: I'm not sure if configuring the method request is required, but I have it in my setup, so I've included it here):
-   1. Select the `GET` method under `/nic/update` in the resource list and click on "Method Request".
-   1. Expand "URL Query String Parameters" and add three query strings: `hostname`, `myip`, and `offline`.
-   1. Expand "HTTP Request Headers" and add a single header: `Authorization`.
-   1. At the top, click "Method Execution" to go back to the previous screen.
-1. Configure the integration request to map the request contents into the JSON format our Lambda function expects:
-   1. Select the `GET` method under `/nic/update` in the resource list and click on "Integration Request".
-   1. Expand "Body Mapping Templates" and add a mapping template for content-type `application/json` (note: you have to explicitly type it in, even though it is already pre-populated in grey).
-   1. Paste the contents of the `api_mapping_template` file in the template box and click "Save".
-   1. If asked about request body passthrough, use the recommended setting.
-   1. At the top, click "Method Execution" to go back to the previous screen.
-1. Configure the method responses, which correspond to HTTP response codes:
-   1. Select the `GET` method under `/nic/update` in the resource list and click on "Method Response".
-   1. Expand the `200` row and change the content type to `text/plain`.
-   1. Click "Add Response", enter `500`, and click the grey checkmark to create a method response type for generic server errors.
-   1. Expand the `500` row and click "Add Response Model".
-   1. Enter `text/plain` and select "Empty" from the drop-down, then click the grey check mark.
-   1. Repeat the previous steps for the other response codes that the Lambda function may return: `400`, `401`, `403`, and `404`.
-   1. At the top, click "Method Execution" to go back to the previous screen.
-1. Configure the integration response to map the JSON response from the Lambda function to HTTP responses sent to the user:
-   1. Select the `GET` method under `/nic/update` in the resource list and click on "Integration Response".
-   1. Expand the default mapping row, then expand "Body Mapping Templates".
-   1. Select `application/json` and populate the template with:
-      `$input.path('$.response')`
-   1. Click "Save".
-   1. Click "Add integration response" and populate the Lambda error regex with:
-      `.*"status"\s*:\s*500.*`
-   1. Select `500` from the "Method response status" drop-down list.
-   1. Expand "Body Mapping Templates" and add a mapping template for `application/json`.
-   1. Populate the mapping template with:
-      `$util.parseJson($input.path('$.errorMessage')).response`
-   1. Click "Save".
-   1. Repeat the previous steps for the other repsonse codes that the Lambda function may return: `400`, `401`, `403`, and `404`.
-   1. At the top, click "Method Execution" to go back to the previous screen.
-1. Optional: create a `POST` method on the `/nic/update` resource and repeat all of the above steps so that it behaves identically to the `GET` method. This is only required for DDNS clients that use the `POST` method with the `dyndns2` protocol.
+1. Click "Create API" and select "Import" under "REST API".
+1. Paste the included `sample_swagger2_api.json` file, or click "Select Swagger File" to upload it.
+1. Replace the two instances of `<ACCOUNT-NUMBER>` with your AWS account number (without dashes). You can find your account number under your name in the upper-right corner.
+1. Update the region names (if not `us-east-1`) and Lambda function names (if not `dyndns53_lambda`) on the same lines as `<ACCOUNT-NUMBER>`, as necessary.
+1. Click "Import".
 
 #### Deploy the API
 
